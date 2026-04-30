@@ -35,7 +35,7 @@ export default function Doctors() {
       title: r.name,
       subtitle: `${r.code} · ${r.speciality}`,
       meta: { Practice: r.practice, Area: r.area, "Assigned Rep": r.rep, "ADRC/day": r.adrc, Status: r.status },
-      actions: [{ label: "Open Doctor Profile", tone: "primary" }, { label: "MAO: Reassign Rep" }, { label: "Send Newsletter" }],
+      actions: [{ label: "Open Doctor Profile", tone: "primary" }, { label: "View / Create MOA" }, { label: "Send Newsletter" }],
     })}
   />;
 }

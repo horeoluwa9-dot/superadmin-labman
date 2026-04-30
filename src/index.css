@@ -52,14 +52,14 @@
 
     --radius: 0.5rem;
 
-    /* Sidebar */
-    --sidebar-background: 213 60% 10%;
-    --sidebar-foreground: 210 30% 92%;
+    /* Sidebar — white, brand accents */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 25% 27%;
     --sidebar-primary: 6 63% 46%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 213 50% 15%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 213 50% 18%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 213 60% 10%;
+    --sidebar-border: 214 25% 91%;
     --sidebar-ring: 6 63% 46%;
 
     /* Effects */

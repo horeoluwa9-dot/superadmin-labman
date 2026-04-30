@@ -1,21 +1,38 @@
-import { PageHeader, Panel, Pill, Tabs, Pagination, fmtZAR } from "@/components/shared/Toolbar";
+import { PageHeader, Panel, Pill, Tabs, Pagination } from "@/components/shared/Toolbar";
 import { useActionDialog } from "@/components/shared/FormDialog";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Send, FileCheck2 } from "lucide-react";
 import { KpiCard } from "@/components/shared/KpiCard";
+import { FilterBar } from "@/components/shared/FilterBar";
+import { useBranch } from "@/lib/branch";
 
 const RELEASES = [
-  { ln: "TPL-2026-04-30-0142", patient: "Thandiwe Mokoena", tests: "FBC, U&E, HBA1C", path: "Dr. Phakathi", reviewed: true, channel: "Doctor Portal", status: "Ready", critical: false },
-  { ln: "TPL-2026-04-30-0143", patient: "Sibusiso Khumalo", tests: "HIV PCR",          path: "Dr. R. Yemmy",  reviewed: true, channel: "Email + SMS",   status: "Ready", critical: true },
-  { ln: "TPL-2026-04-30-0144", patient: "Naledi Dlamini",   tests: "TSH, Free T4",     path: "Dr. F. Ike",    reviewed: false, channel: "Doctor Portal", status: "Awaiting Review", critical: false },
-  { ln: "TPL-2026-04-30-0140", patient: "Pieter v.d. Merwe", tests: "PSA, Lipogram",    path: "Dr. Phakathi", reviewed: true, channel: "Email",          status: "Released", critical: false },
+  { ln: "TPL-2026-04-30-0142", patient: "Thandiwe Mokoena", branch: "Booysens", tests: "FBC, U&E, HBA1C", path: "Dr. Phakathi", reviewed: true, channel: "Doctor Portal", status: "Ready", critical: false },
+  { ln: "TPL-2026-04-30-0143", patient: "Sibusiso Khumalo", branch: "Pretoria", tests: "HIV PCR",          path: "Dr. R. Yemmy",  reviewed: true, channel: "Email + SMS",   status: "Ready", critical: true },
+  { ln: "TPL-2026-04-30-0144", patient: "Naledi Dlamini",   branch: "Cape Town", tests: "TSH, Free T4",     path: "Dr. F. Ike",    reviewed: false, channel: "Doctor Portal", status: "Awaiting Review", critical: false },
+  { ln: "TPL-2026-04-30-0140", patient: "Pieter v.d. Merwe", branch: "Booysens", tests: "PSA, Lipogram",    path: "Dr. Phakathi", reviewed: true, channel: "Email",          status: "Released", critical: false },
 ];
 
 export default function ReleaseOrders() {
   const action = useActionDialog();
+  const { branch } = useBranch();
   const [tab, setTab] = useState("Ready");
+  const [fBranch, setFBranch] = useState("");
+  const [fChannel, setFChannel] = useState("");
+  const [fCritical, setFCritical] = useState("");
+  const [search, setSearch] = useState("");
+
   const counts = RELEASES.reduce((a, r) => ({ ...a, All: (a.All||0)+1, [r.status]: (a[r.status]||0)+1 }), {} as any);
-  const filtered = tab === "All" ? RELEASES : RELEASES.filter(r => r.status === tab);
+  const filtered = useMemo(() => RELEASES.filter(r => {
+    if (branch !== "ALL" && r.branch !== branch) return false;
+    if (tab !== "All" && r.status !== tab) return false;
+    if (fBranch && r.branch !== fBranch) return false;
+    if (fChannel && r.channel !== fChannel) return false;
+    if (fCritical === "Critical" && !r.critical) return false;
+    if (fCritical === "Non-Critical" && r.critical) return false;
+    if (search && !`${r.patient} ${r.ln} ${r.tests}`.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  }), [tab, fBranch, fChannel, fCritical, search, branch]);
 
   return (
     <>
@@ -28,17 +45,27 @@ export default function ReleaseOrders() {
       </div>
       <Panel>
         <Tabs items={["All","Ready","Awaiting Review","Released"]} active={tab} onChange={setTab} counts={counts} />
+        <FilterBar
+          filters={[
+            { name: "branch", label: "Branches", options: ["Booysens","Pretoria","Cape Town","Durban","JHB HQ"], value: fBranch, onChange: setFBranch },
+            { name: "channel", label: "Channels", options: ["Doctor Portal","Email","Email + SMS","WhatsApp","Print"], value: fChannel, onChange: setFChannel },
+            { name: "critical", label: "Severity", options: ["Critical","Non-Critical"], value: fCritical, onChange: setFCritical },
+          ]}
+          search={search} onSearch={setSearch}
+          onClear={() => { setFBranch(""); setFChannel(""); setFCritical(""); setSearch(""); }}
+        />
         <div className="flex gap-2 mb-4">
           <button onClick={() => action.open({ title: `Release All Ready (${counts.Ready||0})`, tone: "approve", confirmLabel: "Release All", reasonLabel: "Optional note", presetReasons: ["Reviewed by pathologist","QC passed","Routine batch release"] })} className="bg-target text-white text-xs font-semibold px-3.5 py-2 rounded-lg inline-flex items-center gap-1.5"><Send className="h-3.5 w-3.5" />Release All Ready</button>
           <button className="border border-border bg-white text-xs font-semibold px-3 py-2 rounded-lg">Print Release Report</button>
         </div>
         <div className="overflow-x-auto rounded-lg border border-border">
           <table className="data-table">
-            <thead><tr><th>Lab #</th><th>Patient</th><th>Tests</th><th>Pathologist</th><th>Reviewed</th><th>Delivery</th><th>Critical</th><th>Status</th><th>Action</th></tr></thead>
+            <thead><tr><th>Lab #</th><th>Patient</th><th>Branch</th><th>Tests</th><th>Pathologist</th><th>Reviewed</th><th>Delivery</th><th>Critical</th><th>Status</th><th>Action</th></tr></thead>
             <tbody>{filtered.map(r => (
               <tr key={r.ln}>
                 <td className="font-mono text-xs">{r.ln}</td>
                 <td className="font-medium">{r.patient}</td>
+                <td>{r.branch}</td>
                 <td className="text-xs">{r.tests}</td>
                 <td className="text-xs">{r.path}</td>
                 <td>{r.reviewed ? <Pill tone="success">✓</Pill> : <Pill tone="warning">Pending</Pill>}</td>
@@ -54,7 +81,9 @@ export default function ReleaseOrders() {
                   )}
                 </td>
               </tr>
-            ))}</tbody>
+            ))}
+            {filtered.length === 0 && <tr><td colSpan={10} className="text-center py-8 text-muted-foreground text-xs">No releases match your filters.</td></tr>}
+            </tbody>
           </table>
           <Pagination total={filtered.length} />
         </div>

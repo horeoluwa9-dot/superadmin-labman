@@ -17,9 +17,10 @@ const cols: Column<Co>[] = [
   { header: "Branches",   cell: r => <span className="font-mono">{r.branches}</span> },
   { header: "Status",     cell: r => <Pill tone={r.active?"success":"muted"}>{r.active?"Active":"Inactive"}</Pill> },
 ];
+import { NEW_COMPANY_FIELDS } from "@/lib/forms";
 export default function Companies() {
   return <EntityList kicker="Section 5A · Administration" title="Companies" breadcrumb={["Administration","Companies"]}
-    primaryLabel="New Company"
+    primaryLabel="New Company" formFields={NEW_COMPANY_FIELDS} formSize="lg"
     rows={ROWS} columns={cols}
     kpis={[
       { label: "Companies", value: ROWS.length, accent: "navy" },

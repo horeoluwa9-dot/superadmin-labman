@@ -21,9 +21,10 @@ const cols: Column<P>[] = [
   { header: "Branch",  cell: r => r.branch },
   { header: "Visits",  cell: r => <span className="font-mono">{r.visits}</span> },
 ];
+import { NEW_PATIENT_FIELDS } from "@/lib/forms";
 export default function Patients() {
   return <EntityList kicker="Section 5E · Administration" title="Patient Master" breadcrumb={["Administration","Patients"]}
-    primaryLabel="New Patient" rows={ROWS} columns={cols}
+    primaryLabel="New Patient" formFields={NEW_PATIENT_FIELDS} formSize="xl" rows={ROWS} columns={cols}
     kpis={[
       { label: "Patients (active)", value: "12,481", accent: "navy" },
       { label: "New This Month", value: "342", accent: "success", sub: "+8% vs LM" },

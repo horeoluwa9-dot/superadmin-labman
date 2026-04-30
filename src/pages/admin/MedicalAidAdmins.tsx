@@ -19,9 +19,10 @@ const cols: Column<A>[] = [
   { header: "Contact",     cell: r => r.contact, mono: true },
   { header: "Status",      cell: r => <Pill tone={r.status==="Live"?"success":"warning"}>{r.status}</Pill> },
 ];
+import { NEW_MA_ADMIN_FIELDS } from "@/lib/forms";
 export default function MedicalAidAdmins() {
   return <EntityList kicker="Section 5D · Administration" title="Medical Aid Administrators" breadcrumb={["Administration","Medical Aid Admins"]}
-    primaryLabel="New Administrator" rows={ROWS} columns={cols}
+    primaryLabel="New Administrator" formFields={NEW_MA_ADMIN_FIELDS} rows={ROWS} columns={cols}
     getDrawer={r => ({
       title: r.name, subtitle: r.id,
       meta: { Schemes: r.schemes, Contact: r.contact, Status: r.status },

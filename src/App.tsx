@@ -31,6 +31,10 @@ import MedicalAidAdmins from "./pages/admin/MedicalAidAdmins";
 import Notifiable from "./pages/admin/Notifiable";
 import Guarantors from "./pages/admin/Guarantors";
 import MOA from "./pages/admin/MOA";
+import Ranges from "./pages/admin/Ranges";
+import AuditActions from "./pages/utilities/AuditActions";
+import FeedLogs from "./pages/utilities/FeedLogs";
+import Newsletters from "./pages/utilities/Newsletters";
 
 import SalesDashboard from "./pages/sales/Dashboard";
 import MaoSheet from "./pages/sales/MaoSheet";
@@ -119,6 +123,7 @@ const App = () => (
           <Route path="/admin/notifiable" element={W(<Notifiable />)} />
           <Route path="/admin/guarantors" element={W(<Guarantors />)} />
           <Route path="/admin/moa" element={W(<MOA />)} />
+          <Route path="/admin/ranges" element={W(<Ranges />)} />
 
           {/* Sales */}
           <Route path="/sales" element={W(<SalesDashboard />)} />
@@ -358,17 +363,10 @@ const App = () => (
           <Route path="/tariffs" element={W(<Tariffs />)} />
 
           {/* Utilities */}
-          <Route path="/utilities" element={W(<Utilities />)} />
-          <Route path="/utilities/audit" element={W(<Utilities />)} />
-          <Route path="/utilities/newsletters" element={W(<Newsletter />)} />
-          <Route path="/utilities/feed-logs" element={S("Section 15 · Utilities", "Result Feed Logs", ["Utilities","Feed Logs"],
-            [{ title: "Last 24h", items: [
-              { label: "Successful deliveries", value: "8,142", tone: "success" },
-              { label: "Failed deliveries",     value: "12",    tone: "danger" },
-              { label: "Pending retries",       value: "4",     tone: "warning" },
-              { label: "Avg delivery latency",  value: "1.4s",  tone: "info" },
-            ]}]
-          )} />
+          <Route path="/utilities" element={W(<AuditActions />)} />
+          <Route path="/utilities/audit" element={W(<AuditActions />)} />
+          <Route path="/utilities/newsletters" element={W(<Newsletters />)} />
+          <Route path="/utilities/feed-logs" element={W(<FeedLogs />)} />
           <Route path="/utilities/logs" element={S("Section 15 · Utilities", "Log Viewer", ["Utilities","Logs"],
             [{ title: "Log Streams", items: [
               { label: "API Gateway",    value: "12,481 lines/hr", tone: "info" },

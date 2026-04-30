@@ -153,7 +153,20 @@ export default function Worksheets() {
 
   return (
     <>
-      <PageHeader kicker="Section 3C" title="Worksheets" breadcrumb={["Laboratory", "Worksheets"]} />
+      <PageHeader kicker="Section 3C" title="Worksheets" breadcrumb={["Laboratory", "Worksheets"]}
+        actions={<button onClick={() => form.open({
+          title: "Generate Worksheet",
+          subtitle: "Select department, laboratories, date range and order statuses to include.",
+          size: "lg", submitLabel: "Generate PDF",
+          fields: [
+            { name: "department", label: "Department", type: "select", required: true, options: ["CHEM","HAEM","MICRO","HISTO","VIRO","HIV","ISOT"], group: "Filter Options" },
+            { name: "labs",       label: "Laboratories", type: "multiselect", required: true, options: ["All Laboratories","Booysens","Pretoria","Cape Town","Durban","JHB HQ","Polokwane","Witbank","Klerksdorp"], defaultValue: ["All Laboratories"], span: 2, group: "Filter Options" },
+            { name: "from", label: "Date From", type: "date", required: true, defaultValue: "2026-03-31", group: "Filter Options" },
+            { name: "to",   label: "Date To",   type: "date", required: true, defaultValue: "2026-04-30", group: "Filter Options" },
+            { name: "statuses", label: "Order Status", type: "multiselect", required: true, options: ["Registered","To Check","In Progress","Resulted","Released"], defaultValue: ["Registered","To Check"], span: 2, group: "Filter Options" },
+          ],
+        })} className="bg-target text-white text-xs font-semibold px-3 py-2 rounded-lg inline-flex items-center gap-1.5">Generate Worksheet</button>}
+      />
       <FilterBar
         date={{ from, to, setFrom, setTo }}
         filters={[

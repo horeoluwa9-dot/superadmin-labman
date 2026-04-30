@@ -1,41 +1,30 @@
 import { EntityList, Column } from "@/components/shared/EntityList";
 import { Pill } from "@/components/shared/Toolbar";
+import { NEW_NOTIFIABLE_SIMPLE_FIELDS } from "@/lib/forms";
 
-type N = { id: string; disease: string; patient: string; lab: string; reportedAt: string; ndic: "Submitted"|"Pending"|"Acknowledged"; severity: "High"|"Medium"|"Low" };
+type N = { id: string; icd10: string; email: string; disabled?: boolean };
 const ROWS: N[] = [
-  { id: "ND-7741", disease: "Tuberculosis (Pulmonary)", patient: "PAT-009931", lab: "Booysens",  reportedAt: "30/04/2026 09:14", ndic: "Submitted",   severity: "High" },
-  { id: "ND-7742", disease: "Hepatitis B (Acute)",      patient: "PAT-009942", lab: "Durban",    reportedAt: "30/04/2026 11:02", ndic: "Acknowledged",severity: "High" },
-  { id: "ND-7743", disease: "Measles",                  patient: "PAT-008812", lab: "Polokwane", reportedAt: "29/04/2026 16:48", ndic: "Pending",     severity: "Medium" },
-  { id: "ND-7744", disease: "Typhoid Fever",            patient: "PAT-009551", lab: "Lagos",     reportedAt: "29/04/2026 14:20", ndic: "Submitted",   severity: "Medium" },
-  { id: "ND-7745", disease: "Cholera (Suspected)",      patient: "PAT-009601", lab: "Harare",    reportedAt: "30/04/2026 07:50", ndic: "Pending",     severity: "High" },
-  { id: "ND-7746", disease: "Mpox",                     patient: "PAT-009620", lab: "Cape Town", reportedAt: "28/04/2026 10:10", ndic: "Acknowledged",severity: "Medium" },
-  { id: "ND-7747", disease: "Listeriosis",              patient: "PAT-009631", lab: "JHB HQ",    reportedAt: "27/04/2026 13:30", ndic: "Submitted",   severity: "Low" },
+  { id: "ND-1", icd10: "B24",          email: "Hiv_Diseasemanagement@discovery.co.za" },
+  { id: "ND-2", icd10: "B24",          email: "hiv@gems.gov.za" },
+  { id: "ND-3", icd10: "E10.1",        email: "diabeticcare@bonitas.co.za" },
+  { id: "ND-4", icd10: "Disabled B24", email: "results@lifesense.co.za", disabled: true },
+  { id: "ND-5", icd10: "B24",          email: "pathresults@afadm.co.za" },
 ];
 const cols: Column<N>[] = [
-  { header: "Ref",         cell: r => r.id, mono: true },
-  { header: "Disease",     cell: r => <span className="font-medium">{r.disease}</span> },
-  { header: "Patient",     cell: r => r.patient, mono: true },
-  { header: "Lab",         cell: r => r.lab },
-  { header: "Reported",    cell: r => r.reportedAt, mono: true },
-  { header: "NDIC Status", cell: r => <Pill tone={r.ndic==="Acknowledged"?"success":r.ndic==="Submitted"?"info":"warning"}>{r.ndic}</Pill> },
-  { header: "Severity",    cell: r => <Pill tone={r.severity==="High"?"danger":r.severity==="Medium"?"warning":"muted"}>{r.severity}</Pill> },
+  { header: "Diagnosis code", cell: r => <span className={r.disabled ? "text-muted-foreground italic" : "font-medium"}>{r.icd10}</span> },
+  { header: "Email address",  cell: r => <span className="text-blue-700">{r.email}</span> },
+  { header: "Status",         cell: r => r.disabled ? <Pill tone="muted">Disabled</Pill> : <Pill tone="success">Active</Pill> },
 ];
-import { NEW_NOTIFIABLE_FIELDS } from "@/lib/forms";
+
 export default function Notifiable() {
-  return <EntityList kicker="Section 5G · Administration" title="Notifiable Diseases" breadcrumb={["Administration","Notifiable"]}
-    primaryLabel="New Notification" formFields={NEW_NOTIFIABLE_FIELDS} formSize="lg" rows={ROWS} columns={cols}
-    intro="Notifiable disease reporting is an ISO/WHO requirement. All cases auto-flag from the LIS and queue for NDIC submission."
-    kpis={[
-      { label: "Cases (MTD)", value: ROWS.length, accent: "navy" },
-      { label: "Pending NDIC", value: ROWS.filter(r=>r.ndic==="Pending").length, accent: "warn" },
-      { label: "High Severity", value: ROWS.filter(r=>r.severity==="High").length, accent: "red" },
-      { label: "Submission SLA", value: "94%", accent: "success" },
-    ]}
+  return <EntityList kicker="Section 5G · Administration" title="Notifiable Diseases" breadcrumb={["Administration","Notifiable Diseases","List"]}
+    primaryLabel="New notifiable disease" formFields={NEW_NOTIFIABLE_SIMPLE_FIELDS} formSize="md" rows={ROWS} columns={cols}
+    intro="When a lab result matches one of the diagnosis codes below, an automatic notification is sent to the listed email — used for medical-aid disease management programs and statutory NDIC reporting."
     getDrawer={r => ({
-      title: r.disease, subtitle: `${r.id} · ${r.patient}`,
-      meta: { Lab: r.lab, Reported: r.reportedAt, "NDIC Status": r.ndic, Severity: r.severity },
-      body: <p className="text-muted-foreground">Auto-flagged from LIS test results. Submission to NDIC includes patient demographics + test details under POPIA-compliant transfer.</p>,
-      actions: [{ label: "Submit to NDIC", tone: "primary" }, { label: "Resend Notification" }, { label: "Audit Trail" }],
+      title: r.icd10, subtitle: r.email,
+      meta: { "Diagnosis code": r.icd10, "Email address": r.email, Status: r.disabled ? "Disabled" : "Active" },
+      body: <p className="text-xs text-muted-foreground">Triggered when an LIS result line matches this ICD-10 code. Each send is audit-logged with a recipient hash. Disable temporarily without losing history.</p>,
+      actions: [{ label: "Edit", tone: "primary" }, { label: "Send Test Email" }, { label: r.disabled ? "Enable" : "Disable", tone: "danger" }],
     })}
   />;
 }

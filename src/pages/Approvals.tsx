@@ -1,9 +1,43 @@
 import { useState } from "react";
 import { PageHeader, Panel, Pill, Tabs } from "@/components/shared/Toolbar";
 import { useSearchParams } from "react-router-dom";
-import { useActionDialog } from "@/components/shared/FormDialog";
+import { useActionDialog, useFormDialog } from "@/components/shared/FormDialog";
 import { useDrawer } from "@/components/shared/DetailDrawer";
-import { CheckCircle2, XCircle, MessageCircleQuestion, Clock } from "lucide-react";
+import { CheckCircle2, XCircle, MessageCircleQuestion, Clock, Mail, ShieldCheck } from "lucide-react";
+
+const EMAIL_TEMPLATES = {
+  approved: {
+    subject: "Your access request has been approved — Target Pathology",
+    body: `Dear {{name}},
+
+Your access to the Target Pathology Labman 3 platform has been approved.
+
+Role: {{role}}
+Access Level: {{level}}
+Branch: {{branch}}
+Username: {{email}}
+
+A temporary password has been sent to your work email. You will be required to change it on first login and enable 2-factor authentication.
+
+If you did not request this access, please contact IT Support immediately.
+
+Regards,
+Super Admin · Target Pathology`,
+  },
+  rejected: {
+    subject: "Your access request requires further review",
+    body: `Dear {{name}},
+
+Your request for {{role}} ({{level}}) access has been declined at this stage.
+
+Reason: {{reason}}
+
+Please discuss with your line manager and resubmit with the required documentation.
+
+Regards,
+Super Admin · Target Pathology`,
+  },
+};
 
 const items = {
   Financial: [
@@ -31,6 +65,7 @@ export default function Approvals() {
   const [params] = useSearchParams();
   const [active, setActive] = useState(params.get("tab")?.replace(/^./, c => c.toUpperCase()) || "All");
   const action = useActionDialog();
+  const form = useFormDialog();
   const drawer = useDrawer();
 
   const counts = Object.fromEntries(TABS.map(t => [t, t === "All"

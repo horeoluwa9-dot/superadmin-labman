@@ -48,6 +48,7 @@ export const NAV: NavItem[] = [
       { label: "Patients",           to: "/admin/patients" },
       { label: "Doctors",            to: "/admin/doctors" },
       { label: "Tests",              to: "/admin/tests" },
+      { label: "Ranges",             to: "/admin/ranges" },
       { label: "Notifiable Diseases", to: "/admin/notifiable" },
       { label: "MOA Agreements",      to: "/admin/moa" },
     ] },

@@ -119,16 +119,59 @@ export default function Approvals() {
                 <div className="mt-2 text-xs bg-amber-50 text-amber-900 px-3 py-1.5 rounded border border-amber-200">
                   ⚠ Consequence: {it.consequence}
                 </div>
+                {(it as any).access && (
+                  <div className="mt-3 rounded-lg border border-purple-200 bg-purple-50/50 p-3">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-purple-800 mb-2">
+                      <ShieldCheck className="h-3.5 w-3.5" /> Access being granted to
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                      <div><div className="text-[10px] text-muted-foreground uppercase">User</div><div className="font-semibold">{(it as any).access.user}</div></div>
+                      <div><div className="text-[10px] text-muted-foreground uppercase">Email</div><div className="font-mono text-[11px]">{(it as any).access.email}</div></div>
+                      <div><div className="text-[10px] text-muted-foreground uppercase">Branch</div><div>{(it as any).access.branch}</div></div>
+                      <div><div className="text-[10px] text-muted-foreground uppercase">Current Role</div><div>{(it as any).access.currentRole} <span className="text-muted-foreground">({(it as any).access.currentLevel})</span></div></div>
+                      <div className="col-span-2"><div className="text-[10px] text-muted-foreground uppercase">→ Target Role</div><div className="font-semibold text-purple-900">{(it as any).access.targetRole} <span className="font-mono text-[11px]">({(it as any).access.targetLevel})</span></div></div>
+                      <div className="col-span-3"><div className="text-[10px] text-muted-foreground uppercase">Justification</div><div className="text-[11px]">{(it as any).access.justification}</div></div>
+                    </div>
+                  </div>
+                )}
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <button
-                    onClick={() => action.open({
-                      title: `Approve · ${it.title}`, subtitle: `${it.id} · ${it.category}`,
-                      tone: "approve", confirmLabel: "Approve",
-                      reasonLabel: "Approval reason (optional)",
-                      presetReasons: ["Within policy","Risk acceptable","Documentation verified","Verbal confirmation received"],
-                    })}
+                    onClick={() => {
+                      if ((it as any).access) {
+                        const a = (it as any).access;
+                        const tpl = EMAIL_TEMPLATES.approved;
+                        const body = tpl.body.replace("{{name}}", a.user).replace("{{role}}", a.targetRole).replace(/{{level}}/g, a.targetLevel).replace("{{branch}}", a.branch).replace("{{email}}", a.email);
+                        form.open({
+                          title: `Approve Access · ${a.user}`,
+                          subtitle: `Grant ${a.targetRole} (${a.targetLevel}) at ${a.branch}`,
+                          size: "lg", submitLabel: "Approve & Send Email",
+                          successMessage: "Access granted · Welcome email sent",
+                          fields: [
+                            { name: "user", label: "User", defaultValue: a.user, required: true, group: "Access" },
+                            { name: "email", label: "Email", type: "email", defaultValue: a.email, required: true, group: "Access" },
+                            { name: "role", label: "Role", type: "select", required: true, defaultValue: a.targetRole, options: ["Data Capturer","Pre-Lab Technician","Phlebotomist","Lab Technician","Senior Lab Tech","Pathologist","Lab Manager","Sales Person","Sales Manager","Driver","Driver Supervisor","Quality Assurance","Inventory Manager","Accountant","HR Manager","Financial Manager","Fin Claim Officer","Administrator"], group: "Access" },
+                            { name: "level", label: "Access Level", type: "select", required: true, defaultValue: a.targetLevel, options: ["L1 — Operational","L2 — Lab Floor","L3 — Senior","L4 — Manager","L5 — Super Admin"], group: "Access" },
+                            { name: "branch", label: "Branch", defaultValue: a.branch, required: true, group: "Access" },
+                            { name: "expiry", label: "Access Expiry (optional)", type: "date", group: "Access", hint: "Leave blank for permanent" },
+                            { name: "twoFA", label: "Require 2FA on first login", type: "checkbox", defaultValue: true, group: "Security" },
+                            { name: "tempPwd", label: "Send temporary password", type: "checkbox", defaultValue: true, group: "Security" },
+                            { name: "subject", label: "Email Subject", required: true, defaultValue: tpl.subject, span: 2, group: "Email Template" },
+                            { name: "body", label: "Email Body", type: "textarea", required: true, defaultValue: body, span: 2, group: "Email Template", hint: "Tokens already substituted. Edit freely before sending." },
+                            { name: "ccHr", label: "CC HR Manager", type: "checkbox", defaultValue: true, group: "Email Template" },
+                            { name: "ccManager", label: "CC Line Manager", type: "checkbox", defaultValue: true, group: "Email Template" },
+                          ],
+                        });
+                      } else {
+                        action.open({
+                          title: `Approve · ${it.title}`, subtitle: `${it.id} · ${it.category}`,
+                          tone: "approve", confirmLabel: "Approve",
+                          reasonLabel: "Approval reason (optional)",
+                          presetReasons: ["Within policy","Risk acceptable","Documentation verified","Verbal confirmation received"],
+                        });
+                      }
+                    }}
                     className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-1.5 rounded-md">
-                    <CheckCircle2 className="h-3.5 w-3.5" /> Approve
+                    <CheckCircle2 className="h-3.5 w-3.5" /> {(it as any).access ? "Approve & Email" : "Approve"}
                   </button>
                   <button
                     onClick={() => action.open({

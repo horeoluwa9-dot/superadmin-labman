@@ -17,7 +17,10 @@ const items = {
     { id: "AP-9915", tone: "success" as const, title: "Emergency reagent order", detail: "HIV PCR kit — request 30 boxes from supplier · R 87,420", who: "Inventory Manager · Pretoria", risk: "Medium", sla: "3h 02m", consequence: "Stock-out in 4 days" },
   ],
   Access: [
-    { id: "AP-9916", tone: "danger" as const, title: "Privilege escalation request", detail: "Request to elevate Lab Tech (L2) → Senior Lab Tech (L3)", who: "HR Officer", risk: "High", sla: "—", consequence: "Audit-logged" },
+    { id: "AP-9916", tone: "danger" as const, title: "Privilege escalation request", detail: "Request to elevate Lab Tech (L2) → Senior Lab Tech (L3)", who: "HR Officer", risk: "High", sla: "—", consequence: "Audit-logged",
+      access: { user: "K. Mokoena", currentRole: "Data Capturer", currentLevel: "L1 — Operational", targetRole: "Pre-Lab Technician", targetLevel: "L2 — Lab Floor", branch: "Cape Town", email: "k.mokoena@targetlab.co.za", justification: "Promotion approved by HR — needs to capture pre-lab specimen QC data." } },
+    { id: "AP-9917", tone: "warning" as const, title: "New user access request", detail: "Onboarding new Phlebotomist — Booysens", who: "HR Officer", risk: "Medium", sla: "1d", consequence: "Cannot start shift without access",
+      access: { user: "S. Mahlangu", currentRole: "—", currentLevel: "None", targetRole: "Phlebotomist", targetLevel: "L1 — Operational", branch: "Booysens", email: "s.mahlangu@targetlab.co.za", justification: "Confirmed contract signed 28 Apr." } },
   ],
   External: [],
 };

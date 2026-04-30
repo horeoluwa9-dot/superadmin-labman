@@ -282,13 +282,47 @@ export const NEW_MA_FIELDS: FormField[] = [
 ];
 
 export const NEW_DEPT_FIELDS: FormField[] = [
-  { name: "name",  label: "Department Name", required: true },
-  { name: "code",  label: "Code", required: true, hint: "e.g. HAEM, CHEM" },
-  { name: "head",  label: "Head of Department", required: true },
+  { name: "name",  label: "Department", required: true, hint: "e.g. HAEM, CHEM, SERO" },
+  { name: "code",  label: "Department code", required: true, hint: "Single letter, e.g. H, C, S" },
+  { name: "order", label: "Department order", type: "number", required: true, hint: "Display sort order" },
+  { name: "pk",    label: "Pk", type: "number", required: true, hint: "Primary key (legacy LIS)" },
+  { name: "head",  label: "Head of Department" },
   { name: "branches", label: "Active in Branches", type: "multiselect", options: BRANCHES, span: 2 },
-  { name: "tat",   label: "TAT SLA (e.g. 4h, 24h)", required: true },
+  { name: "tat",   label: "TAT SLA (e.g. 4h, 24h)" },
   { name: "isoRef", label: "ISO 15189 Section", defaultValue: "ISO 15189 §5.5" },
   { name: "description", label: "Description", type: "textarea", span: 2 },
+];
+
+export const NEW_NOTIFIABLE_SIMPLE_FIELDS: FormField[] = [
+  { name: "icd10", label: "Diagnosis code", required: true, hint: "ICD-10 / disease classification code (e.g. B24, E10.1)", span: 2 },
+  { name: "email", label: "Email address", type: "email", required: true, hint: "Notifiable disease registry / partner inbox", span: 2 },
+];
+
+export const NEW_RANGE_FIELDS: FormField[] = [
+  { name: "code",    label: "Range code", required: true, group: "Identity" },
+  { name: "species", label: "Species", type: "select", required: true, defaultValue: "HUMAN", options: ["HUMAN","ANIMAL"], group: "Identity" },
+  { name: "sex",     label: "Sex", type: "select", required: true, options: ["M","F","B"], group: "Identity", hint: "B = Both" },
+  { name: "age",     label: "Age (years, decimal)", required: true, group: "Identity", hint: "e.g. 0.003 = days, 0.5 = 6 months" },
+  { name: "hi",      label: "Hi (Normal high)",   type: "number", required: true, group: "Reference" },
+  { name: "lo",      label: "Lo (Normal low)",    type: "number", required: true, group: "Reference" },
+  { name: "panHi",   label: "Pan hi (Panic high)", type: "number", required: true, group: "Panic" },
+  { name: "panLo",   label: "Pan lo (Panic low)",  type: "number", required: true, group: "Panic" },
+  { name: "rejectHi",label: "Reject hi", type: "number", required: true, group: "Reject" },
+  { name: "rejectLo",label: "Reject lo", type: "number", required: true, group: "Reject" },
+  { name: "canNorm", label: "Can norm",  type: "number", required: true, group: "Cancer" },
+  { name: "canHi",   label: "Can hi",    type: "number", required: true, group: "Cancer" },
+  { name: "canLo",   label: "Can lo",    type: "number", required: true, group: "Cancer" },
+  { name: "flagComm",label: "Flag comm", type: "checkbox", group: "Flags", placeholder: "Append result comment when out of range" },
+];
+
+export const NEW_NEWSLETTER_FIELDS: FormField[] = [
+  { name: "subject",   label: "Subject", required: true, span: 2 },
+  { name: "fromEmail", label: "From email", type: "email", required: true, defaultValue: "newsletter@targetlabs.co.za" },
+  { name: "fromName",  label: "From name", required: true, defaultValue: "Target Pathology Laboratory" },
+  { name: "html",      label: "Html (Body)", type: "textarea", required: true, span: 2, hint: "Rich HTML supported. Tokens: {{doctor}}, {{first_name}}, {{practice}}" },
+  { name: "audience",  label: "Audience", type: "multiselect", options: ["All Doctors","Discovery Network","GEMS Network","Top 50 Referrers","KZN Region","Gauteng Region","International"], span: 2 },
+  { name: "schedule",  label: "Send", type: "select", options: ["Save Draft","Send Now","Schedule…"], defaultValue: "Save Draft" },
+  { name: "scheduleAt", label: "Scheduled at", type: "date" },
 ];
 
 export const NEW_PATIENT_FIELDS: FormField[] = [

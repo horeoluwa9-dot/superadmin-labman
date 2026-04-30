@@ -1,6 +1,10 @@
+import { useState, useMemo } from "react";
 import { PageHeader, Panel, Pill } from "@/components/shared/Toolbar";
-import { useFormDialog } from "@/components/shared/FormDialog";
+import { useFormDialog, useActionDialog } from "@/components/shared/FormDialog";
 import { useDrawer } from "@/components/shared/DetailDrawer";
+import { usePrintPreview } from "@/components/shared/PrintPreview";
+import { FilterBar } from "@/components/shared/FilterBar";
+import { useBranch } from "@/lib/branch";
 import { FlaskConical, Microscope, Beaker, TestTube, Droplets, Bug } from "lucide-react";
 
 const dept = [
@@ -11,10 +15,77 @@ const dept = [
   { name: "Histology", icon: Microscope, branch: "Durban", date: "30 Apr 2026", tech: "mr francis ike", count: 11, status: "In Progress" },
   { name: "Virology", icon: TestTube, branch: "JHB HQ", date: "30 Apr 2026", tech: "Lab Tech 07", count: 18, status: "Pending Review" },
 ];
+type D = typeof dept[number];
 
 export default function Worksheets() {
   const drawer = useDrawer();
-  const openWorksheet = (d: typeof dept[0]) => drawer.open({
+  const preview = usePrintPreview();
+  const action = useActionDialog();
+  const form = useFormDialog();
+  const { branch } = useBranch();
+  const [fBranch, setFBranch] = useState("");
+  const [fDept, setFDept] = useState("");
+  const [fStatus, setFStatus] = useState("");
+  const [search, setSearch] = useState("");
+  const [from, setFrom] = useState("2026-04-30");
+  const [to, setTo] = useState("2026-04-30");
+
+  const filtered = useMemo(() => dept.filter(d => {
+    if (branch !== "ALL" && d.branch !== branch) return false;
+    if (fBranch && d.branch !== fBranch) return false;
+    if (fDept && !d.name.includes(fDept)) return false;
+    if (fStatus && d.status !== fStatus) return false;
+    if (search && !`${d.name} ${d.tech}`.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  }), [fBranch, fDept, fStatus, search, branch]);
+
+  const printPreviewWorksheet = (d: D) => preview.open({
+    title: `${d.name} Worksheet — ${d.date}`,
+    subtitle: `${d.branch} · Technician: ${d.tech}`,
+    filename: `Worksheet_${d.name}_${d.date}`,
+    body: (
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "2px solid #c8102e", paddingBottom: 12, marginBottom: 16 }}>
+          <div>
+            <h1>TARGET PATHOLOGY · {d.name.toUpperCase()} WORKSHEET</h1>
+            <div className="muted">{d.branch} · {d.date} · Technician: {d.tech}</div>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <div className="muted">Specimens</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: "#0c1f3f" }}>{d.count}</div>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Pos</th><th>Lab #</th><th>Patient</th><th>Test</th><th>Result</th><th>Units</th><th>Flag</th></tr></thead>
+          <tbody>
+            {Array.from({ length: 12 }).map((_, i) => (
+              <tr key={i}>
+                <td style={{ fontFamily: "monospace" }}>A{(i+1).toString().padStart(2,"0")}</td>
+                <td style={{ fontFamily: "monospace" }}>TPL-2026-04-30-{(140 + i).toString().padStart(4,"0")}</td>
+                <td>{["T. Mokoena","S. Khumalo","N. Dlamini","P. v.d. Merwe","A. Nkosi","L. Mahlangu","K. Sithole","M. Dube","R. Khoza","B. Naidoo","T. Maseko","V. Pillay"][i]}</td>
+                <td>{["FBC","HBA1C","HIV PCR","TSH","CRP","Lipogram","U&E","PSA","Glucose","ALT","Hb","INR"][i]}</td>
+                <td style={{ fontFamily: "monospace" }}>{(Math.random() * 10).toFixed(2)}</td>
+                <td>g/dL</td>
+                <td>{i % 5 === 0 ? "H" : i % 7 === 0 ? "L" : ""}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div style={{ marginTop: 24, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div>
+            <div className="muted">QC Run · Levey-Jennings</div>
+            <div style={{ marginTop: 4 }}>Within 2σ · Last calibration 06:00</div>
+          </div>
+          <div>
+            <div className="muted">Technician signature</div>
+            <div style={{ borderBottom: "1px solid #94a3b8", height: 32, marginTop: 4 }} />
+          </div>
+        </div>
+      </div>
+    ),
+  });
+
+  const openWorksheet = (d: D) => drawer.open({
     title: `${d.name} — Worksheet`,
     subtitle: `${d.branch} · ${d.date} · ${d.tech}`,
     meta: { Specimens: d.count, Status: d.status, Branch: d.branch, Technician: d.tech, "Last Sync": "Now" },
@@ -37,18 +108,64 @@ export default function Worksheets() {
       </div>
     ),
     actions: [
-      { label: "Open in Full Worksheet View", tone: "primary" },
-      { label: "Print Worksheet" },
-      { label: "Release Selected Results" },
-      { label: "Add QC Run" },
+      { label: "Open Full Worksheet View", tone: "primary", onClick: () => form.open({
+        title: `${d.name} — Full Worksheet`,
+        subtitle: `${d.branch} · ${d.date} · ${d.count} specimens`,
+        size: "xl", submitLabel: "Save Worksheet",
+        fields: [
+          { name: "header", label: "Header notes", type: "textarea", span: 2, group: "Header", placeholder: "Run notes, observations, deviations…" },
+          { name: "tech",   label: "Technician", defaultValue: d.tech, group: "Header" },
+          { name: "supervisor", label: "Supervisor sign-off", group: "Header" },
+          { name: "qcStatus", label: "QC Status", type: "select", options: ["Pass","Warning","Fail"], required: true, group: "QC" },
+          { name: "qcLot",  label: "QC Lot #", group: "QC" },
+          { name: "qcMean", label: "QC Mean", type: "number", group: "QC" },
+          { name: "qcSd",   label: "QC SD", type: "number", group: "QC" },
+          { name: "selected", label: "Specimens batch action", type: "select", options: ["Release All Resulted","Hold All","Re-run Selected","No batch action"], group: "Batch" },
+          { name: "comments", label: "Reviewer comments", type: "textarea", span: 2, group: "Batch" },
+        ],
+      }) },
+      { label: "Preview & Print Worksheet", onClick: () => printPreviewWorksheet(d) },
+      { label: "Add QC Run", onClick: () => form.open({
+        title: `Add QC Run · ${d.name}`,
+        subtitle: `${d.branch} · ${d.date}`,
+        size: "lg", submitLabel: "Record QC Run",
+        fields: [
+          { name: "level", label: "QC Level", type: "select", options: ["Level 1","Level 2","Level 3"], required: true, group: "QC" },
+          { name: "lot",   label: "Lot #",   required: true, group: "QC" },
+          { name: "expiry",label: "Lot Expiry", type: "date", group: "QC" },
+          { name: "analyser", label: "Analyser", required: true, group: "QC" },
+          { name: "value", label: "Measured Value", type: "number", required: true, group: "Result" },
+          { name: "mean",  label: "Target Mean", type: "number", required: true, group: "Result" },
+          { name: "sd",    label: "Target SD",   type: "number", required: true, group: "Result" },
+          { name: "westgard", label: "Westgard Rule Applied", type: "select", options: ["1-2s","1-3s","2-2s","R-4s","4-1s","10x","None"], group: "Result" },
+          { name: "action",label: "Action Taken", type: "textarea", span: 2, group: "Result" },
+        ],
+      }) },
+      { label: "Release Selected Results", onClick: () => action.open({
+        title: `Release Selected from ${d.name}`,
+        subtitle: `${d.branch} · ${d.date}`,
+        tone: "approve", confirmLabel: "Release Selected Results",
+        reasonLabel: "Release note (optional)",
+        presetReasons: ["Pathologist signed off","Auto-validated","Verbal authorisation","Routine batch"],
+      }) },
     ],
   });
 
   return (
     <>
       <PageHeader kicker="Section 3C" title="Worksheets" breadcrumb={["Laboratory", "Worksheets"]} />
+      <FilterBar
+        date={{ from, to, setFrom, setTo }}
+        filters={[
+          { name: "branch", label: "Branches", options: ["Booysens","Pretoria","Cape Town","Durban","JHB HQ"], value: fBranch, onChange: setFBranch },
+          { name: "dept", label: "Departments", options: ["HIV","Chemistry","Haematology","Microbiology","Histology","Virology"], value: fDept, onChange: setFDept },
+          { name: "status", label: "Statuses", options: ["In Progress","Pending Review","Awaiting Specimen","Completed"], value: fStatus, onChange: setFStatus },
+        ]}
+        search={search} onSearch={setSearch}
+        onClear={() => { setFBranch(""); setFDept(""); setFStatus(""); setSearch(""); }}
+      />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {dept.map((d) => {
+        {filtered.map((d) => {
           const Icon = d.icon;
           return (
             <Panel key={d.name + d.branch}>
@@ -70,6 +187,9 @@ export default function Worksheets() {
             </Panel>
           );
         })}
+        {filtered.length === 0 && (
+          <div className="col-span-full text-center py-16 text-sm text-muted-foreground">No worksheets match your filters.</div>
+        )}
       </div>
     </>
   );

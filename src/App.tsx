@@ -30,6 +30,7 @@ import MedicalAids from "./pages/admin/MedicalAids";
 import MedicalAidAdmins from "./pages/admin/MedicalAidAdmins";
 import Notifiable from "./pages/admin/Notifiable";
 import Guarantors from "./pages/admin/Guarantors";
+import MOA from "./pages/admin/MOA";
 
 import SalesDashboard from "./pages/sales/Dashboard";
 import MaoSheet from "./pages/sales/MaoSheet";
@@ -117,6 +118,7 @@ const App = () => (
           <Route path="/admin/tests" element={W(<Tests />)} />
           <Route path="/admin/notifiable" element={W(<Notifiable />)} />
           <Route path="/admin/guarantors" element={W(<Guarantors />)} />
+          <Route path="/admin/moa" element={W(<MOA />)} />
 
           {/* Sales */}
           <Route path="/sales" element={W(<SalesDashboard />)} />

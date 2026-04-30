@@ -38,7 +38,7 @@ export default function Settings() {
     tone: "approve",
     confirmLabel: "Run Test Restore",
     presetReasons: ["Quarterly DR drill","Ad-hoc verification","Audit evidence"],
-    onConfirm: () => toast.success("Sandbox restore queued", { description: "ETA ~14 min · You will be emailed when complete" }),
+    onConfirm: () => { toast.success("Sandbox restore queued", { description: "ETA ~14 min · You will be emailed when complete" }); },
   });
 
   return (

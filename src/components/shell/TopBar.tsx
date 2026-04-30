@@ -195,5 +195,14 @@ export function TopBar() {
         </button>
       </div>
     </header>
+    {branch !== "ALL" && (
+      <div className="bg-target/10 border-b border-target/30 px-4 py-1.5 text-xs flex items-center gap-2">
+        <MapPin className="h-3.5 w-3.5 text-target" />
+        <span className="font-semibold text-target-dark">Branch scope:</span>
+        <span className="font-mono text-foreground">{branch}</span>
+        <button onClick={() => setBranch("ALL")} className="ml-auto text-[11px] font-semibold text-target hover:underline">Reset to All Branches</button>
+      </div>
+    )}
+    </>
   );
 }

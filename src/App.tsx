@@ -43,6 +43,11 @@ import ClockInMap from "./pages/hr/ClockInMap";
 import Leave from "./pages/hr/Leave";
 import Payroll from "./pages/hr/Payroll";
 import Expenses from "./pages/hr/Expenses";
+import StaffOverview from "./pages/staff/Overview";
+import Drivers from "./pages/staff/Drivers";
+import SalesTeam from "./pages/staff/SalesTeam";
+import Orders from "./pages/lims/Orders";
+import ReleaseOrders from "./pages/lims/ReleaseOrders";
 
 import Inventory from "./pages/Inventory";
 import Kits from "./pages/inventory/Kits";
@@ -86,8 +91,8 @@ const App = () => (
           {/* LIMS */}
           <Route path="/lims" element={W(<Requisitions />)} />
           <Route path="/lims/requisitions" element={W(<Requisitions />)} />
-          <Route path="/lims/orders" element={W(<Requisitions />)} />
-          <Route path="/lims/release" element={W(<Worksheets />)} />
+          <Route path="/lims/orders" element={W(<Orders />)} />
+          <Route path="/lims/release" element={W(<ReleaseOrders />)} />
           <Route path="/lims/worksheets" element={W(<Worksheets />)} />
           <Route path="/lims/critical" element={W(<CriticalResults />)} />
           <Route path="/lims/timeline" element={W(<Timeline />)} />
@@ -130,13 +135,16 @@ const App = () => (
           <Route path="/hr/expenses" element={W(<Expenses />)} />
 
           {/* Staff Mode */}
-          <Route path="/staff" element={W(<StaffList />)} />
+          <Route path="/staff" element={W(<StaffOverview />)} />
           <Route path="/staff/directory" element={W(<StaffList />)} />
           <Route path="/staff/clock" element={W(<ClockInMap />)} />
           <Route path="/staff/leave" element={W(<Leave />)} />
           <Route path="/staff/payroll" element={W(<Payroll />)} />
           <Route path="/staff/expenses" element={W(<Expenses />)} />
           <Route path="/staff/commission" element={W(<Commission />)} />
+          <Route path="/staff/sales" element={W(<SalesTeam />)} />
+          <Route path="/staff/drivers" element={W(<Drivers />)} />
+          <Route path="/staff/doctors" element={W(<Doctors />)} />
           <Route path="/staff/targets" element={S("Section 7 · Staff", "Targets & KPIs", ["Staff","Targets"],
             [{ title: "Per-Role Targets", items: [
               { label: "Sales Rep · Monthly Turnover", value: "R 150,000", tone: "info" },

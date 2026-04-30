@@ -152,6 +152,63 @@ export default function CommandCentre() {
         </Panel>
       </div>
 
+      {/* Monthly Turnover · Requisitions by Lab · by Doctor */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-5">
+        <Panel title="Monthly Turnover" subtitle="Apr 1 – Apr 30, 2026">
+          <div className="text-3xl font-bold text-navy">{fmtZAR(7_808_232.68)}</div>
+          <div className="text-xs text-muted-foreground mt-1">Across all 29 branches · 4,212 requisitions · {fmtZAR(380_503.73)} commission</div>
+          <div className="h-32 mt-3">
+            <ResponsiveContainer>
+              <BarChart data={trendData.slice(-7)}>
+                <Bar dataKey="v" fill="hsl(var(--navy))" radius={[4,4,0,0]} />
+                <XAxis dataKey="d" hide />
+                <Tooltip />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Panel>
+        <Panel title="Requisitions by Laboratory" subtitle="Top 5 branches">
+          <table className="w-full text-xs">
+            <thead><tr className="text-muted-foreground border-b border-border"><th className="text-left py-1.5">Code</th><th className="text-right">Turnover</th><th className="text-right">Reqs</th></tr></thead>
+            <tbody>
+              {[
+                ["BOOYSENS", 4_824_596.32, 2931],
+                ["MAFIKENG",  710_051.19,   325],
+                ["PRETORIA",  686_297.19,   388],
+                ["BLOEM",     642_213.02,   366],
+                ["DURBAN",    533_115.80,   251],
+              ].map(([c, t, r]: any) => (
+                <tr key={c} className="border-b border-border/60">
+                  <td className="py-1.5 font-mono">{c}</td>
+                  <td className="text-right font-mono">{(t as number).toLocaleString("en-ZA",{minimumFractionDigits:2})}</td>
+                  <td className="text-right font-mono">{r}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Panel>
+        <Panel title="Requisitions by Doctor" subtitle="Top 5 by turnover">
+          <table className="w-full text-xs">
+            <thead><tr className="text-muted-foreground border-b border-border"><th className="text-left py-1.5">Code</th><th className="text-left">Doctor</th><th className="text-right">Reqs</th></tr></thead>
+            <tbody>
+              {[
+                ["BUX01",   "DR T BUX",                127],
+                ["MATI55",  "Dr D Matabane",           115],
+                ["SEKE99",  "DR T MATSEKE",            105],
+                ["KWIN109", "Dr R RAMAKHETHA KWINDA",  124],
+                ["BUAN0109","Dr N BUANGA",              48],
+              ].map(([c, n, r]: any) => (
+                <tr key={c} className="border-b border-border/60">
+                  <td className="py-1.5 font-mono">{c}</td>
+                  <td>{n}</td>
+                  <td className="text-right font-mono">{r}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Panel>
+      </div>
+
       {/* Panel D — Show Patience for One Day */}
       <Panel
         title="Show Patience for One Day"

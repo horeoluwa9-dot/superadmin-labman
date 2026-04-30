@@ -1,8 +1,10 @@
-import { PageHeader, Panel, Pill, DataToolbar, Pagination, Tabs } from "@/components/shared/Toolbar";
+import { PageHeader, Panel, Pill, Tabs, Pagination } from "@/components/shared/Toolbar";
 import { useDrawer } from "@/components/shared/DetailDrawer";
+import { useFormDialog, useActionDialog } from "@/components/shared/FormDialog";
 import { useState } from "react";
 import { Calendar, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { KpiCard } from "@/components/shared/KpiCard";
+import { NEW_LEAVE_FIELDS } from "@/lib/forms";
 
 const REQUESTS = [
   { id: "LV-2210", staff: "Sister A. Naidoo",   role: "Phlebotomist",  branch: "Booysens", type: "Sick",       from: "01/05/2026", to: "03/05/2026", days: 3, status: "Pending",  reason: "Flu — certificate attached" },
@@ -16,18 +18,25 @@ const REQUESTS = [
 
 export default function Leave() {
   const drawer = useDrawer();
+  const form = useFormDialog();
+  const action = useActionDialog();
   const [tab, setTab] = useState("Pending");
   const counts = REQUESTS.reduce((a, r) => ({ ...a, [r.status]: (a[r.status] || 0) + 1 }), {} as Record<string, number>);
   const filtered = REQUESTS.filter(r => r.status === tab);
 
+  const openNew = () => form.open({
+    title: "New Leave Request",
+    subtitle: "Submit a leave request — routes to line manager + HR for approval.",
+    fields: NEW_LEAVE_FIELDS,
+    size: "lg",
+    submitLabel: "Submit Request",
+    successMessage: "Leave request submitted",
+  });
+
   return (
     <>
       <PageHeader kicker="Section 7C · HR" title="Leave Management" breadcrumb={["HR & Staff", "Leave"]}
-        actions={<button onClick={() => drawer.open({
-          title: "New Leave Request",
-          body: <p className="text-muted-foreground">Submit a leave request for any staff member. Approval routes to line manager + HR.</p>,
-          actions: [{ label: "Submit", tone: "primary" }],
-        })} className="bg-target text-white text-xs font-semibold px-3.5 py-2 rounded-lg">+ New Request</button>}
+        actions={<button onClick={openNew} className="bg-target hover:bg-target-dark text-white text-xs font-semibold px-3.5 py-2 rounded-lg">+ New Request</button>}
       />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <KpiCard label="Pending" value={counts.Pending || 0} accent="warn" sub="Awaiting approval" icon={<Clock className="h-4 w-4" />} />
@@ -39,18 +48,10 @@ export default function Leave() {
         <Tabs items={["Pending","Approved","Rejected"]} active={tab} onChange={setTab} counts={counts} />
         <div className="overflow-x-auto rounded-lg border border-border">
           <table className="data-table">
-            <thead><tr><th>Ref</th><th>Staff</th><th>Branch</th><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Status</th><th></th></tr></thead>
+            <thead><tr><th>Ref</th><th>Staff</th><th>Branch</th><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Status</th><th>Action</th></tr></thead>
             <tbody>
               {filtered.map(r => (
-                <tr key={r.id} className="cursor-pointer" onClick={() => drawer.open({
-                  title: `${r.staff} — ${r.type} Leave`,
-                  subtitle: `${r.id} · ${r.branch}`,
-                  meta: { Type: r.type, From: r.from, To: r.to, Days: r.days, Role: r.role, Status: r.status },
-                  body: <><div className="font-semibold text-navy">Reason</div><p className="text-muted-foreground">{r.reason}</p></>,
-                  actions: r.status === "Pending"
-                    ? [{ label: "Approve", tone: "primary" }, { label: "Reject", tone: "danger" }, { label: "Request Info" }]
-                    : [{ label: "Reverse Decision" }],
-                })}>
+                <tr key={r.id}>
                   <td className="font-mono text-xs">{r.id}</td>
                   <td className="font-medium">{r.staff}</td>
                   <td>{r.branch}</td>
@@ -58,10 +59,27 @@ export default function Leave() {
                   <td className="font-mono text-xs">{r.from}</td>
                   <td className="font-mono text-xs">{r.to}</td>
                   <td className="font-mono">{r.days}</td>
+                  <td><Pill tone={r.status === "Approved" ? "success" : r.status === "Rejected" ? "danger" : "warning"}>{r.status}</Pill></td>
                   <td>
-                    <Pill tone={r.status === "Approved" ? "success" : r.status === "Rejected" ? "danger" : "warning"}>{r.status}</Pill>
+                    {r.status === "Pending" ? (
+                      <div className="flex gap-1">
+                        <button onClick={() => action.open({
+                          title: `Approve ${r.id}`, subtitle: `${r.staff} · ${r.type} · ${r.days} day(s)`,
+                          tone: "approve", reasonLabel: "Approval comment (optional)",
+                          presetReasons: ["Coverage confirmed","Within entitlement","Manager endorsed"],
+                          confirmLabel: "Approve Leave",
+                        })} className="text-[10px] font-semibold bg-emerald-600 text-white px-2 py-1 rounded">Approve</button>
+                        <button onClick={() => action.open({
+                          title: `Reject ${r.id}`, subtitle: `${r.staff} · ${r.type} · ${r.days} day(s)`,
+                          tone: "reject", requireReason: true, reasonLabel: "Reason for rejection",
+                          presetReasons: ["Coverage gap","Insufficient notice","Outside entitlement","Conflicts with audit"],
+                          confirmLabel: "Reject Leave",
+                        })} className="text-[10px] font-semibold bg-red-600 text-white px-2 py-1 rounded">Reject</button>
+                      </div>
+                    ) : (
+                      <button onClick={() => drawer.open({ title: r.id, meta: { Reason: r.reason, From: r.from, To: r.to } })} className="text-[10px] text-target font-semibold">View →</button>
+                    )}
                   </td>
-                  <td><Calendar className="h-3.5 w-3.5 text-muted-foreground" /></td>
                 </tr>
               ))}
             </tbody>

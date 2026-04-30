@@ -1,4 +1,6 @@
 import { PageHeader, Panel, Pill, DataToolbar, Pagination, fmtZAR } from "@/components/shared/Toolbar";
+import { useFormDialog } from "@/components/shared/FormDialog";
+import { NEW_TEST_FIELDS } from "@/lib/forms";
 
 const tests = [
   { code: "HBA1C",   name: "Glycated Haemoglobin (HbA1c)", dept: "CHEM",  spec: "EDTA", cont: "Lavender",  tat: 4,  base: 280, aid: 245, mp: "PRX-CHE-204", machine: "Cobas 6000",  flag: "" },
@@ -9,11 +11,12 @@ const tests = [
 ];
 
 export default function Tests() {
+  const form = useFormDialog();
   return (
     <>
       <PageHeader kicker="Section 5G · Administration" title="Tests · Master List" breadcrumb={["Administration", "Tests"]} />
       <Panel>
-        <DataToolbar primaryLabel="Create Test" />
+        <DataToolbar primaryLabel="Create Test" onPrimary={() => form.open({ title: "Create Test", fields: NEW_TEST_FIELDS, size: "xl" })} />
         <div className="overflow-x-auto rounded-lg border border-border">
           <table className="data-table">
             <thead>

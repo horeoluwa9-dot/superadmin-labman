@@ -21,9 +21,10 @@ const cols: Column<MA>[] = [
   { header: "Reject %",    cell: r => <Pill tone={r.rejectRate>7?"danger":r.rejectRate>5?"warning":"success"}>{r.rejectRate}%</Pill> },
   { header: "Tariff",      cell: r => <span className="pill-info text-[10px]">{r.tariff}</span> },
 ];
+import { NEW_MA_FIELDS } from "@/lib/forms";
 export default function MedicalAids() {
   return <EntityList kicker="Section 5D · Administration" title="Medical Aids" breadcrumb={["Administration","Medical Aids"]}
-    primaryLabel="New Medical Aid" rows={ROWS} columns={cols}
+    primaryLabel="New Medical Aid" formFields={NEW_MA_FIELDS} formSize="lg" rows={ROWS} columns={cols}
     kpis={[
       { label: "Schemes",       value: ROWS.length, accent: "navy" },
       { label: "Total Lives",   value: (ROWS.reduce((s,r)=>s+r.lives,0)/1e6).toFixed(1)+"M", accent: "gold" },

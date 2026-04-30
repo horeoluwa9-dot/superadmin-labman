@@ -21,9 +21,10 @@ const cols: Column<D>[] = [
   { header: "ADRC",       cell: r => <span className="font-mono">{r.adrc}/day</span> },
   { header: "Status",     cell: r => <Pill tone={r.status==="Active"?"success":r.status==="Lead"?"warning":"danger"}>{r.status}</Pill> },
 ];
+import { NEW_DOCTOR_FIELDS } from "@/lib/forms";
 export default function Doctors() {
   return <EntityList kicker="Section 5F · Administration" title="Doctor Registry" breadcrumb={["Administration","Doctors"]}
-    primaryLabel="New Doctor" rows={ROWS} columns={cols}
+    primaryLabel="New Doctor" formFields={NEW_DOCTOR_FIELDS} formSize="xl" rows={ROWS} columns={cols}
     kpis={[
       { label: "Active Doctors", value: ROWS.filter(r=>r.status==="Active").length, accent: "navy" },
       { label: "Total ADRC/day", value: ROWS.reduce((s,r)=>s+r.adrc,0), accent: "gold" },

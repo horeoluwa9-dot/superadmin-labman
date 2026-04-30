@@ -1,5 +1,7 @@
 import { PageHeader, Panel, Pill } from "@/components/shared/Toolbar";
 import { Beaker, TestTube, Bug, Microscope, Droplets, Activity } from "lucide-react";
+import { useFormDialog } from "@/components/shared/FormDialog";
+import { NEW_DEPT_FIELDS } from "@/lib/forms";
 
 const depts = [
   { name: "HIV",          code: "HIV",  icon: Droplets,   branches: 24, head: "Dr. M. Phakathi", tests: 12, sla: "24h", iso: "ISO 15189 §5.5" },
@@ -11,10 +13,11 @@ const depts = [
 ];
 
 export default function Departments() {
+  const form = useFormDialog();
   return (
     <>
       <PageHeader kicker="Section 5C · Administration" title="Departments" breadcrumb={["Administration", "Departments"]}
-        actions={<button className="bg-target text-white text-xs font-semibold px-3 py-2 rounded-lg">Create Department</button>} />
+        actions={<button onClick={() => form.open({ title: "Create Department", fields: NEW_DEPT_FIELDS, size: "lg" })} className="bg-target text-white text-xs font-semibold px-3 py-2 rounded-lg">Create Department</button>} />
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {depts.map((d) => {
           const Icon = d.icon;

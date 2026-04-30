@@ -1,4 +1,6 @@
 import { PageHeader, Panel, Pill } from "@/components/shared/Toolbar";
+import { useFormDialog } from "@/components/shared/FormDialog";
+import { useDrawer } from "@/components/shared/DetailDrawer";
 import { FlaskConical, Microscope, Beaker, TestTube, Droplets, Bug } from "lucide-react";
 
 const dept = [
@@ -11,6 +13,37 @@ const dept = [
 ];
 
 export default function Worksheets() {
+  const drawer = useDrawer();
+  const openWorksheet = (d: typeof dept[0]) => drawer.open({
+    title: `${d.name} — Worksheet`,
+    subtitle: `${d.branch} · ${d.date} · ${d.tech}`,
+    meta: { Specimens: d.count, Status: d.status, Branch: d.branch, Technician: d.tech, "Last Sync": "Now" },
+    body: (
+      <div className="space-y-3">
+        <div className="font-semibold text-navy">Specimens (sample)</div>
+        <table className="w-full text-xs">
+          <thead><tr className="border-b text-muted-foreground"><th className="text-left py-1">Lab #</th><th className="text-left">Test</th><th className="text-left">Status</th></tr></thead>
+          <tbody>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <tr key={i} className="border-b border-border">
+                <td className="py-1 font-mono">TPL-2026-04-30-{(140 + i).toString().padStart(4, "0")}</td>
+                <td>{["FBC","HBA1C","HIV PCR","TSH","CRP","Lipogram"][i]}</td>
+                <td><Pill tone={i < 3 ? "success" : i < 5 ? "warning" : "muted"}>{i < 3 ? "Resulted" : i < 5 ? "On analyzer" : "Pending"}</Pill></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="text-[11px] text-muted-foreground bg-muted/50 p-2 rounded">QC: Levey-Jennings within 2σ · Last cal 06:00</div>
+      </div>
+    ),
+    actions: [
+      { label: "Open in Full Worksheet View", tone: "primary" },
+      { label: "Print Worksheet" },
+      { label: "Release Selected Results" },
+      { label: "Add QC Run" },
+    ],
+  });
+
   return (
     <>
       <PageHeader kicker="Section 3C" title="Worksheets" breadcrumb={["Laboratory", "Worksheets"]} />
@@ -31,7 +64,7 @@ export default function Worksheets() {
                   <div className="text-xs text-muted-foreground mt-1">{d.branch} · {d.date}</div>
                   <div className="text-xs mt-2">Tech: <span className="font-medium">{d.tech}</span></div>
                   <div className="text-2xl font-bold text-navy mt-3">{d.count} <span className="text-xs font-normal text-muted-foreground">specimens</span></div>
-                  <button className="mt-3 w-full bg-navy hover:bg-navy-deep text-white text-xs font-semibold py-2 rounded-md">Open Worksheet</button>
+                  <button onClick={() => openWorksheet(d)} className="mt-3 w-full bg-navy hover:bg-navy-deep text-white text-xs font-semibold py-2 rounded-md">Open Worksheet</button>
                 </div>
               </div>
             </Panel>

@@ -20,9 +20,10 @@ const cols: Column<C>[] = [
   { header: "Terms", cell: r => r.terms },
   { header: "Status", cell: r => <Pill tone={r.status==="Current"?"success":r.status==="Overdue"?"danger":"warning"}>{r.status}</Pill> },
 ];
+import { NEW_CREDITOR_FIELDS } from "@/lib/forms";
 export default function Creditors() {
   return <EntityList kicker="Section 4C · Accounting" title="Creditors" breadcrumb={["Accounting","Creditors"]}
-    primaryLabel="New Creditor" rows={ROWS} columns={cols}
+    primaryLabel="New Creditor" formFields={NEW_CREDITOR_FIELDS} formSize="lg" rows={ROWS} columns={cols}
     kpis={[
       { label: "Total Outstanding", value: fmtZAR(ROWS.reduce((s,r)=>s+r.outstanding,0)), accent: "red" },
       { label: "Overdue", value: ROWS.filter(r=>r.status==="Overdue").length, accent: "warn" },

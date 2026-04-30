@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { PageHeader, Panel, Pill, Tabs, fmtZAR } from "@/components/shared/Toolbar";
+import { useFormDialog } from "@/components/shared/FormDialog";
+import { NEW_ASSET_FIELDS } from "@/lib/forms";
 
 const TABS = ["Computer & IT", "Office Assets", "Lab Equipment", "Vehicles", "Medical Devices"];
 
@@ -16,6 +18,7 @@ const assets = {
 
 export default function Assets() {
   const [tab, setTab] = useState<keyof typeof assets>("Lab Equipment");
+  const form = useFormDialog();
   const rows = assets[tab];
   return (
     <>
@@ -23,7 +26,7 @@ export default function Assets() {
         kicker="Section 4E · Accounting"
         title="Asset Management"
         breadcrumb={["Accounting", "Assets"]}
-        actions={<button className="bg-target text-white text-xs font-semibold px-3 py-2 rounded-lg">Register New Asset</button>}
+        actions={<button onClick={() => form.open({ title: "Register New Asset", fields: NEW_ASSET_FIELDS, size: "xl", submitLabel: "Register Asset" })} className="bg-target text-white text-xs font-semibold px-3 py-2 rounded-lg">Register New Asset</button>}
       />
       <Panel>
         <Tabs items={TABS as any} active={tab} onChange={(t) => setTab(t as any)} />

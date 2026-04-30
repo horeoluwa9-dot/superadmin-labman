@@ -20,9 +20,10 @@ const cols: Column<N>[] = [
   { header: "NDIC Status", cell: r => <Pill tone={r.ndic==="Acknowledged"?"success":r.ndic==="Submitted"?"info":"warning"}>{r.ndic}</Pill> },
   { header: "Severity",    cell: r => <Pill tone={r.severity==="High"?"danger":r.severity==="Medium"?"warning":"muted"}>{r.severity}</Pill> },
 ];
+import { NEW_NOTIFIABLE_FIELDS } from "@/lib/forms";
 export default function Notifiable() {
   return <EntityList kicker="Section 5G · Administration" title="Notifiable Diseases" breadcrumb={["Administration","Notifiable"]}
-    primaryLabel="New Notification" rows={ROWS} columns={cols}
+    primaryLabel="New Notification" formFields={NEW_NOTIFIABLE_FIELDS} formSize="lg" rows={ROWS} columns={cols}
     intro="Notifiable disease reporting is an ISO/WHO requirement. All cases auto-flag from the LIS and queue for NDIC submission."
     kpis={[
       { label: "Cases (MTD)", value: ROWS.length, accent: "navy" },

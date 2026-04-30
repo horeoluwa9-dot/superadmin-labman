@@ -1,5 +1,6 @@
 import { PageHeader, Panel, Pill, DataToolbar, Pagination, Tabs } from "@/components/shared/Toolbar";
 import { useDrawer } from "@/components/shared/DetailDrawer";
+import { useFormDialog, FormField } from "@/components/shared/FormDialog";
 import { ChevronRight } from "lucide-react";
 import { useState, ReactNode } from "react";
 import { KpiCard } from "@/components/shared/KpiCard";
@@ -7,7 +8,7 @@ import { KpiCard } from "@/components/shared/KpiCard";
 export type Column<T> = { header: string; cell: (row: T) => ReactNode; mono?: boolean };
 
 export function EntityList<T extends { id?: string }>({
-  kicker, title, breadcrumb, primaryLabel = "New", rows, columns, kpis, tabs, getDrawer, intro,
+  kicker, title, breadcrumb, primaryLabel = "New", rows, columns, kpis, tabs, getDrawer, intro, formFields, formSize = "lg",
 }: {
   kicker: string; title: string; breadcrumb: string[];
   primaryLabel?: string;
@@ -17,11 +18,26 @@ export function EntityList<T extends { id?: string }>({
   tabs?: { items: string[]; getStatus: (r: T) => string };
   getDrawer: (row: T) => Parameters<ReturnType<typeof useDrawer>["open"]>[0];
   intro?: ReactNode;
+  formFields?: FormField[];
+  formSize?: "md" | "lg" | "xl";
 }) {
   const drawer = useDrawer();
+  const form = useFormDialog();
   const [tab, setTab] = useState(tabs?.items[0] || "All");
   const filtered = tabs ? rows.filter(r => tabs.getStatus(r) === tab) : rows;
   const counts = tabs ? rows.reduce((a,r) => ({ ...a, [tabs.getStatus(r)]: (a[tabs.getStatus(r)] || 0) + 1 }), {} as Record<string,number>) : undefined;
+
+  const openForm = () => {
+    if (formFields) {
+      form.open({ title: primaryLabel, fields: formFields, size: formSize, submitLabel: "Save & Notify", successMessage: `${primaryLabel} created` });
+    } else {
+      drawer.open({
+        title: primaryLabel,
+        body: <p className="text-muted-foreground">Form opens here. All fields validated and audit-logged on save.</p>,
+        actions: [{ label: "Save", tone: "primary" }, { label: "Cancel" }],
+      });
+    }
+  };
 
   return (
     <>
@@ -34,10 +50,7 @@ export function EntityList<T extends { id?: string }>({
       )}
       <Panel>
         {tabs && <Tabs items={tabs.items} active={tab} onChange={setTab} counts={counts} />}
-        <DataToolbar primaryLabel={primaryLabel} onPrimary={() => drawer.open({
-          title: primaryLabel, body: <p className="text-muted-foreground">Form opens here. All fields validated and audit-logged on save.</p>,
-          actions: [{ label: "Save", tone: "primary" }, { label: "Cancel" }],
-        })} />
+        <DataToolbar primaryLabel={primaryLabel} onPrimary={openForm} />
         <div className="overflow-x-auto rounded-lg border border-border">
           <table className="data-table">
             <thead><tr>{columns.map((c,i) => <th key={i}>{c.header}</th>)}<th></th></tr></thead>

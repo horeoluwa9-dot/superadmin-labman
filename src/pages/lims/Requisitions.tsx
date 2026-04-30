@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { PageHeader, Panel, Pill, Tabs, DataToolbar, Pagination, fmtZAR } from "@/components/shared/Toolbar";
+import { useFormDialog } from "@/components/shared/FormDialog";
+import { useDrawer } from "@/components/shared/DetailDrawer";
+import { NEW_REQUISITION_FIELDS } from "@/lib/forms";
 import { Eye, Edit, Printer } from "lucide-react";
 
 const reqs = [
@@ -13,6 +16,9 @@ const TABS = ["All", "Pending", "In Progress", "Completed", "Cancelled"];
 
 export default function LimsRequisitions() {
   const [active, setActive] = useState("All");
+  const form = useFormDialog();
+  const drawer = useDrawer();
+  const openNew = () => form.open({ title: "New Requisition", subtitle: "Create a new lab requisition with patient, tests, specimen and billing details.", fields: NEW_REQUISITION_FIELDS, size: "xl", submitLabel: "Create Requisition & Print Barcodes" });
   const status = (s: string) => ({
     Completed: <Pill tone="success">{s}</Pill>,
     Pending: <Pill tone="muted">{s}</Pill>,

@@ -35,7 +35,7 @@ export default function Notifiable() {
   const sendTest = (r: N) => action.open({
     title: `Send test email to ${r.email}`, tone: "approve",
     reasonLabel: "Sample patient lab #", presetReasons: ["TPL-2026-04-30-0142","TPL-2026-04-30-0099"],
-    confirmLabel: "Send test", onConfirm: () => toast.success(`Test email queued to ${r.email}`),
+    confirmLabel: "Send test", onConfirm: () => { toast.success(`Test email queued to ${r.email}`); },
   });
   const toggle = (r: N) => action.open({
     title: r.disabled ? `Enable ${r.icd10} notifications` : `Disable ${r.icd10} notifications`,

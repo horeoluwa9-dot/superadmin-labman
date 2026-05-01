@@ -141,7 +141,7 @@ export default function MOA() {
 
   const printOne = (m: MOA) => printer.open({
     title: `Memorandum of Agreement · ${m.id}`,
-    subtitle: `${m.doctor} · ${m.practice ?? m.area}`,
+    subtitle: `${m.doctor} · ${m.area}`,
     filename: `MOA_${m.id}_${m.doctor.replace(/[^A-Za-z0-9]+/g,"_")}`,
     body: (
       <div>

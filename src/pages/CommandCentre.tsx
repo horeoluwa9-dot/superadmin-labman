@@ -46,7 +46,11 @@ const patients = [
   { ln: "TPL-2026-04-30-0147", id: "8303155123085", first: "Lerato", sur: "Mahlangu", dr: "DR-088", aid: "GEMS", aidNo: "G-83031", tests: "CD4, Viral Load", bill: "Medical Aid", t: "08:25", b: "Pretoria" },
 ];
 
+const dashCashMA = [{ name: "Medical Aid", v: 5140.67, reqs: 2 }, { name: "Cash", v: 0, reqs: 0 }];
+const dashOrders = [{ name: "RELEASED", v: 1 }, { name: "RESULTED", v: 3 }, { name: "REGISTERED", v: 4 }];
+
 export default function CommandCentre() {
+  const today = "2026-05-01";
   return (
     <>
       <PageHeader
@@ -60,6 +64,120 @@ export default function CommandCentre() {
           </div>
         }
       />
+
+      {/* Representative Performance Dashboard — pinned above operational view */}
+      <Panel className="mb-5" title="Representative Performance" subtitle="Summary of all representative performance for the selected time period.">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+          <div>
+            <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">From Date</label>
+            <input type="date" defaultValue={today} className="w-full mt-1 border border-border rounded-md px-3 py-2 text-sm font-mono" />
+          </div>
+          <div>
+            <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">To Date</label>
+            <input type="date" defaultValue={today} className="w-full mt-1 border border-border rounded-md px-3 py-2 text-sm font-mono" />
+          </div>
+          <div>
+            <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Representative</label>
+            <select className="w-full mt-1 border border-border rounded-md px-3 py-2 text-sm bg-white">
+              <option>All Representatives</option>
+              <option>Stephen Sono</option><option>Prinze Kweku</option><option>Siya Mchunu</option>
+              <option>Kelebogile Mokgatle</option><option>Frank Nworgu</option><option>Lesego Taukobong</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Laboratory</label>
+            <select className="w-full mt-1 border border-border rounded-md px-3 py-2 text-sm bg-white">
+              <option>All Laboratories</option>
+              <option>POLOKWANE</option><option>BOOYSENS</option><option>PRETORIA</option>
+              <option>DURBAN</option><option>CAPE TOWN</option><option>BLOEM</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+          <KpiCard label="Total Requests"   value="2"            sub={`May 1, 2026 – May 1, 2026`} icon={<ListChecks className="h-4 w-4" />} accent="navy" />
+          <KpiCard label="Total Turnover"   value={fmtZAR(5140.67)} sub={`May 1, 2026 – May 1, 2026`} icon={<DollarSign className="h-4 w-4" />} accent="success" />
+          <KpiCard label="Total Commission" value={fmtZAR(179.92)}  sub={`May 1, 2026 – May 1, 2026`} icon={<BadgeDollarSign className="h-4 w-4" />} accent="gold" />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
+          <Panel title="Medical Aid vs Cash Billing">
+            <div className="h-56">
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie data={dashCashMA} dataKey="v" innerRadius={55} outerRadius={85} paddingAngle={2}>
+                    <Cell fill="hsl(var(--navy))" />
+                    <Cell fill="hsl(var(--success, 142 71% 45%))" />
+                  </Pie>
+                  <Tooltip formatter={(v: any) => `R ${Number(v).toLocaleString("en-ZA",{minimumFractionDigits:2})}`} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex justify-center gap-4 text-xs -mt-4">
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-navy" />Medical Aid (2 reqs, R 5,140.67)</span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-emerald-500" />Cash (0 reqs, R 0.00)</span>
+            </div>
+          </Panel>
+          <Panel title="Orders by Status">
+            <div className="h-56">
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie data={dashOrders} dataKey="v" innerRadius={55} outerRadius={85} paddingAngle={2}>
+                    <Cell fill="hsl(24 95% 53%)" />
+                    <Cell fill="hsl(38 92% 50%)" />
+                    <Cell fill="hsl(var(--navy))" />
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex justify-center gap-4 text-xs -mt-4">
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-orange-500" />RELEASED</span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-amber-500" />RESULTED</span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-navy" />REGISTERED</span>
+            </div>
+          </Panel>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Panel title="Requisitions by Laboratory">
+            <table className="w-full text-xs">
+              <thead><tr className="text-muted-foreground border-b border-border">
+                <th className="text-left py-1.5">Code</th><th className="text-right">Turnover</th><th className="text-right">Requisitions</th><th className="text-left pl-3">Laboratory</th>
+              </tr></thead>
+              <tbody>
+                <tr className="border-b border-border/60">
+                  <td className="py-1.5 font-mono">POLOKWANE</td>
+                  <td className="text-right font-mono">5,140.67</td>
+                  <td className="text-right font-mono">2</td>
+                  <td className="pl-3">POLOKWANE</td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="mt-3 flex items-center justify-end gap-2 text-xs text-muted-foreground">
+              Per page <select className="border border-border rounded px-2 py-0.5"><option>5</option><option>10</option><option>25</option></select>
+            </div>
+          </Panel>
+          <Panel title="Requisitions by Doctor">
+            <table className="w-full text-xs">
+              <thead><tr className="text-muted-foreground border-b border-border">
+                <th className="text-left py-1.5">Code</th><th className="text-right">Turnover</th><th className="text-right">Requisitions</th><th className="text-left pl-3">Doctor</th>
+              </tr></thead>
+              <tbody>
+                <tr className="border-b border-border/60">
+                  <td className="py-1.5 font-mono">THWA70</td>
+                  <td className="text-right font-mono">5,140.67</td>
+                  <td className="text-right font-mono">2</td>
+                  <td className="pl-3">DR G THWALA</td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="mt-3 flex items-center justify-end gap-2 text-xs text-muted-foreground">
+              Per page <select className="border border-border rounded px-2 py-0.5"><option>5</option><option>10</option><option>25</option></select>
+            </div>
+          </Panel>
+        </div>
+      </Panel>
 
       {/* Panel A — Critical Alerts (pinned) */}
       <Panel

@@ -125,6 +125,7 @@ const App = () => (
           <Route path="/admin/guarantors" element={W(<Guarantors />)} />
           <Route path="/admin/moa" element={W(<MOA />)} />
           <Route path="/admin/ranges" element={W(<Ranges />)} />
+          <Route path="/admin/canned-comments" element={W(<CannedComments />)} />
 
           {/* Sales */}
           <Route path="/sales" element={W(<SalesDashboard />)} />

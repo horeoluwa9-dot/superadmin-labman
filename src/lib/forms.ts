@@ -256,15 +256,18 @@ export const NEW_COMPANY_FIELDS: FormField[] = [
   { name: "active",   label: "Active", type: "checkbox", defaultValue: true, group: "Status" },
 ];
 
+// Matches Target Pathology "Create / Edit Medical Aid Administrator" form
 export const NEW_MA_ADMIN_FIELDS: FormField[] = [
-  { name: "name", label: "Administrator Name", required: true },
-  { name: "email", label: "Contact Email", type: "email", required: true },
-  { name: "phone", label: "Phone", type: "tel" },
-  { name: "schemes", label: "Schemes Managed (count)", type: "number" },
-  { name: "claimsPortal", label: "Claims Portal URL" },
-  { name: "apiKey", label: "API Integration Key", type: "password" },
-  { name: "switch", label: "Switch Used", type: "select", options: ["Healthbridge","MediSwitch","Direct EDI"] },
-  { name: "active", label: "Active", type: "checkbox", defaultValue: true },
+  { name: "name",        label: "Name", required: true, span: 2 },
+  { name: "webAddress",  label: "Web address" },
+  { name: "webUsername", label: "Web user name", defaultValue: "William@ne" },
+  { name: "webPassword", label: "Web password", type: "password", defaultValue: "password" },
+  { name: "address",     label: "Address", type: "textarea" },
+  { name: "postal",      label: "Postal address", type: "textarea" },
+  { name: "telephone",   label: "Telephone", type: "tel" },
+  { name: "fax",         label: "Fax number" },
+  { name: "email",       label: "Email", type: "email" },
+  { name: "comment",     label: "Comment", type: "textarea", span: 2 },
 ];
 
 export const NEW_MA_FIELDS: FormField[] = [

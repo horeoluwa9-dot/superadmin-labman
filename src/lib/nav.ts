@@ -49,6 +49,8 @@ export const NAV: NavItem[] = [
       { label: "Doctors",            to: "/admin/doctors" },
       { label: "Tests",              to: "/admin/tests" },
       { label: "Ranges",             to: "/admin/ranges" },
+      { label: "Canned Comments",    to: "/admin/canned-comments" },
+      { label: "Guarantors",          to: "/admin/guarantors" },
       { label: "Notifiable Diseases", to: "/admin/notifiable" },
       { label: "MOA Agreements",      to: "/admin/moa" },
     ] },

@@ -32,6 +32,7 @@ import Notifiable from "./pages/admin/Notifiable";
 import Guarantors from "./pages/admin/Guarantors";
 import MOA from "./pages/admin/MOA";
 import Ranges from "./pages/admin/Ranges";
+import CannedComments from "./pages/admin/CannedComments";
 import AuditActions from "./pages/utilities/AuditActions";
 import FeedLogs from "./pages/utilities/FeedLogs";
 import Newsletters from "./pages/utilities/Newsletters";
@@ -124,6 +125,7 @@ const App = () => (
           <Route path="/admin/guarantors" element={W(<Guarantors />)} />
           <Route path="/admin/moa" element={W(<MOA />)} />
           <Route path="/admin/ranges" element={W(<Ranges />)} />
+          <Route path="/admin/canned-comments" element={W(<CannedComments />)} />
 
           {/* Sales */}
           <Route path="/sales" element={W(<SalesDashboard />)} />

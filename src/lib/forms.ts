@@ -411,3 +411,115 @@ export const RECORD_RECEIPT_FIELDS: FormField[] = [
   { name: "receivedBy", label: "Received By", required: true },
   { name: "notes",   label: "Notes", type: "textarea", span: 2 },
 ];
+
+/* =================================================================
+   Additional comprehensive form schemas (Round 4)
+   ================================================================= */
+
+// Canned Comment (per screenshot)
+export const NEW_CANNED_COMMENT_FIELDS: FormField[] = [
+  { name: "code", label: "Code", required: true, group: "Identity" },
+  { name: "abbreviation", label: "Abbreviation", required: true, group: "Identity" },
+  { name: "department", label: "Department", type: "select", required: true,
+    options: ["HAEM","CHEM","SERO","ISOT","HISTO","MICRO","HIV","DIABE","VIRO"], group: "Identity" },
+  { name: "comment", label: "Comment (Rich text)", type: "textarea", required: true, span: 2,
+    hint: "Tokens supported: {{patient}}, {{result}}, {{ref_range}}, {{doctor}}" },
+];
+
+// Generate invoices by date range (Cash / Medical Aid / etc.)
+export const GENERATE_INVOICES_FIELDS: FormField[] = [
+  { name: "type", label: "Invoice type", type: "select", required: true,
+    options: ["Cash","Medical Aid","Corporate","Doctor Account","All"], defaultValue: "Cash", group: "Scope" },
+  { name: "from", label: "From date", type: "date", required: true, group: "Date Range" },
+  { name: "to",   label: "To date",   type: "date", required: true, group: "Date Range" },
+  { name: "branch", label: "Branch", type: "select", options: ["All", ...BRANCHES], defaultValue: "All", group: "Filters" },
+  { name: "medicalAid", label: "Medical Aid (if MA invoices)", type: "select",
+    options: ["All","Discovery","Bonitas","GEMS","Polmed","Fedhealth","Momentum","PSMAS","Cash"], defaultValue: "All", group: "Filters" },
+  { name: "format", label: "Output format", type: "select", options: ["PDF (one per invoice)","CSV summary","ZIP bundle"], defaultValue: "ZIP bundle", group: "Output" },
+  { name: "send", label: "Email after generation", type: "checkbox", defaultValue: true, group: "Output" },
+];
+
+// Financial report filter
+export const FIN_REPORT_FILTER_FIELDS: FormField[] = [
+  { name: "report", label: "Report type", type: "select", required: true,
+    options: ["P&L (Profit & Loss)","Balance Sheet","Cash Flow","Asset Register","Daily Cash Intake","Bank Deposits","Debt Recovery","Petty Cash","Cost Reconciliation","Leakage & Fraud Flags"],
+    group: "Report" },
+  { name: "from",   label: "From date", type: "date", required: true, group: "Period" },
+  { name: "to",     label: "To date",   type: "date", required: true, group: "Period" },
+  { name: "company",label: "Company", type: "select", options: ["All","Target Pathology Holdings","TPL Operations","TPL Lagos","TPL Harare"], defaultValue: "All", group: "Scope" },
+  { name: "branch", label: "Branch",  type: "select", options: ["All", ...BRANCHES], defaultValue: "All", group: "Scope" },
+  { name: "currency", label: "Currency", type: "select", options: ["ZAR","USD","NGN","ZWL"], defaultValue: "ZAR", group: "Scope" },
+  { name: "comparison", label: "Compare to", type: "select", options: ["None","Previous Period","Same Period Last Year","Budget"], defaultValue: "Previous Period", group: "Scope" },
+];
+
+// Schedule Payment (creditors)
+export const SCHEDULE_PAYMENT_FIELDS: FormField[] = [
+  { name: "amount",  label: "Amount", type: "number", prefix: "R", required: true, group: "Payment" },
+  { name: "payDate", label: "Payment date", type: "date", required: true, group: "Payment" },
+  { name: "method",  label: "Method", type: "select", options: ["EFT","ACH","Cheque","Card","Cash"], required: true, defaultValue: "EFT", group: "Payment" },
+  { name: "reference", label: "Reference / PO #", required: true, group: "Payment" },
+  { name: "bank",    label: "Pay from bank", type: "select", options: ["FNB Operating","Standard Bank Main","ABSA Reserve"], required: true, group: "Banking" },
+  { name: "approver", label: "Approver", type: "select", options: ["Auto-route to L4","Mr Patrick Magupya (CFO)","Yanick K. (Acct.)"], group: "Approvals" },
+  { name: "notes",   label: "Notes", type: "textarea", span: 2 },
+];
+
+// New Lead (sales pipeline / leads)
+export const NEW_LEAD_FIELDS: FormField[] = [
+  { name: "name",    label: "Lead Name / Practice", required: true, group: "Lead" },
+  { name: "contact", label: "Primary Contact", required: true, group: "Lead" },
+  { name: "email",   label: "Email", type: "email", required: true, group: "Lead" },
+  { name: "phone",   label: "Phone", type: "tel", required: true, group: "Lead" },
+  { name: "source",  label: "Source", type: "select", required: true,
+    options: ["Referral","Campaign","Manual","Disease Catchment","Import","Web Enquiry","Cold Call"], group: "Lead" },
+  { name: "rep",     label: "Assigned Rep", type: "select", required: true,
+    options: ["Carmen Angelica","Ike Igbo MBA","Patrick Magupya","Makoane Ngoasheng","mr francis ike","P. Moyo"], group: "Assignment" },
+  { name: "branch",  label: "Region / Branch", type: "select", options: BRANCHES, required: true, group: "Assignment" },
+  { name: "value",   label: "Est. Monthly Value", type: "number", prefix: "R", required: true, group: "Value" },
+  { name: "stage",   label: "Initial Stage", type: "select",
+    options: ["New","Contacted","Meeting","Negotiation"], defaultValue: "New", group: "Pipeline" },
+  { name: "nextAction", label: "Next Action", group: "Pipeline" },
+  { name: "nextDate",   label: "Next Action Date", type: "date", group: "Pipeline" },
+  { name: "notes",   label: "Notes", type: "textarea", span: 2 },
+];
+
+// New Wastage event
+export const NEW_WASTAGE_FIELDS: FormField[] = [
+  { name: "item",   label: "Item / Kit / Reagent", required: true, group: "Item" },
+  { name: "lot",    label: "Lot #", group: "Item" },
+  { name: "qty",    label: "Quantity", type: "number", required: true, group: "Item" },
+  { name: "reason", label: "Reason", type: "select", required: true,
+    options: ["Expired","Spilled","Contaminated","Damaged","Equipment failure","Power loss","Other"], group: "Reason" },
+  { name: "branch", label: "Branch", type: "select", options: BRANCHES, required: true, group: "Location" },
+  { name: "staff",  label: "Reported By", required: true, group: "Location" },
+  { name: "cost",   label: "Estimated Cost", type: "number", prefix: "R", required: true, group: "Cost" },
+  { name: "evidence", label: "Photo / Evidence", type: "file", span: 2, group: "Evidence" },
+  { name: "rootCause", label: "Root Cause Analysis", type: "textarea", span: 2 },
+];
+
+// New Store Request
+export const NEW_STORE_REQUEST_FIELDS: FormField[] = [
+  { name: "item",   label: "Item / Kit", required: true, group: "Request" },
+  { name: "qty",    label: "Quantity",   type: "number", required: true, group: "Request" },
+  { name: "urgency",label: "Urgency",    type: "select", required: true,
+    options: ["Routine","Urgent","Critical"], defaultValue: "Routine", group: "Request" },
+  { name: "branch", label: "Destination Branch", type: "select", options: BRANCHES, required: true, group: "Request" },
+  { name: "neededBy", label: "Needed By", type: "date", required: true, group: "Request" },
+  { name: "supplier", label: "Preferred Supplier", group: "Sourcing" },
+  { name: "estCost",  label: "Est. Cost", type: "number", prefix: "R", group: "Sourcing" },
+  { name: "justification", label: "Justification", type: "textarea", span: 2, required: true },
+];
+
+// Mitigation plan (supply risk)
+export const MITIGATION_PLAN_FIELDS: FormField[] = [
+  { name: "item",   label: "Item at risk", required: true, group: "Risk" },
+  { name: "branch", label: "Branch", type: "select", options: BRANCHES, required: true, group: "Risk" },
+  { name: "action", label: "Mitigation action", type: "select", required: true,
+    options: ["Emergency reorder","Inter-branch transfer","Substitute kit","Reduce test menu","Defer non-urgent"], group: "Plan" },
+  { name: "owner",  label: "Owner", required: true, group: "Plan" },
+  { name: "deadline", label: "Deadline", type: "date", required: true, group: "Plan" },
+  { name: "approvers", label: "Approvers", type: "multiselect",
+    options: ["Inventory Manager","Lab Manager","Branch Manager","CFO","Super Admin"], span: 2, group: "Plan" },
+  { name: "notes",  label: "Notes", type: "textarea", span: 2 },
+];
+
+// Newsletter "New Issue" wizard (uses NEW_NEWSLETTER_FIELDS already)
